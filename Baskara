@@ -1,0 +1,79 @@
+import sys
+import math
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QLabel, QLineEdit, QPushButton,
+    QVBoxLayout, QHBoxLayout, QMessageBox, QTextEdit
+)
+
+class BhaskaraCalculator(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Calculadora de Bhaskara - Passo a Passo")
+        self.setGeometry(100, 100, 400, 300)
+        self.init_ui()
+
+    def init_ui(self):
+        # Entradas
+        self.a_input = QLineEdit()
+        self.b_input = QLineEdit()
+        self.c_input = QLineEdit()
+
+        layout_inputs = QHBoxLayout()
+        layout_inputs.addWidget(QLabel("A:"))
+        layout_inputs.addWidget(self.a_input)
+        layout_inputs.addWidget(QLabel("B:"))
+        layout_inputs.addWidget(self.b_input)
+        layout_inputs.addWidget(QLabel("C:"))
+        layout_inputs.addWidget(self.c_input)
+
+        # Botão
+        self.calc_btn = QPushButton("Calcular")
+        self.calc_btn.clicked.connect(self.calcular_bhaskara)
+
+        # Resultado
+        self.result_area = QTextEdit()
+        self.result_area.setReadOnly(True)
+
+        # Layout principal
+        layout = QVBoxLayout()
+        layout.addLayout(layout_inputs)
+        layout.addWidget(self.calc_btn)
+        layout.addWidget(self.result_area)
+
+        self.setLayout(layout)
+
+    def calcular_bhaskara(self):
+        try:
+            a = float(self.a_input.text())
+            b = float(self.b_input.text())
+            c = float(self.c_input.text())
+
+            if a == 0:
+                self.result_area.setPlainText("O valor de A não pode ser zero.")
+                return
+
+            delta = b**2 - 4*a*c
+            passos = f"Passo 1: Δ = b² - 4ac = ({b})² - 4×{a}×{c} = {delta}\n"
+
+            if delta < 0:
+                passos += "Δ < 0 → Não existem raízes reais."
+            else:
+                raiz_delta = math.sqrt(delta)
+                x1 = (-b + raiz_delta) / (2*a)
+                x2 = (-b - raiz_delta) / (2*a)
+
+                passos += (
+                    f"Passo 2: x₁ = (-b + √Δ) / 2a = ({-b} + √{delta}) / (2×{a}) = {x1:.2f}\n"
+                    f"Passo 3: x₂ = (-b - √Δ) / 2a = ({-b} - √{delta}) / (2×{a}) = {x2:.2f}"
+                )
+
+            self.result_area.setPlainText(passos)
+
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "Por favor, insira números válidos.")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    janela = BhaskaraCalculator()
+    janela.show()
+    sys.exit(app.exec_())
